@@ -1,0 +1,53 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+model Vehicle {
+  createdAt          DateTime            @default(now())
+  id                 String              @id @default(cuid())
+  maintenanceRecords MaintenanceRecord[]
+  make               String?
+  miles              Int?
+  model              String?
+  name               String?
+  registrationPlate  String?
+  serviceCenters     ServiceCenter[]
+  updatedAt          DateTime            @updatedAt
+  yearOfManufacture  Int?
+}
+
+model MaintenanceRecord {
+  createdAt       DateTime       @default(now())
+  id              String         @id @default(cuid())
+  serviceCenter   ServiceCenter? @relation(fields: [serviceCenterId], references: [id])
+  serviceCenterId String?
+  updatedAt       DateTime       @updatedAt
+  vehicle         Vehicle?       @relation(fields: [vehicleId], references: [id])
+  vehicleId       String?
+}
+
+model ServiceCenter {
+  createdAt          DateTime            @default(now())
+  id                 String              @id @default(cuid())
+  maintenanceRecords MaintenanceRecord[]
+  updatedAt          DateTime            @updatedAt
+  vehicle            Vehicle?            @relation(fields: [vehicleId], references: [id])
+  vehicleId          String?
+}
